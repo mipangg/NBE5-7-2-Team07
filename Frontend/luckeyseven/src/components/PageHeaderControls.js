@@ -46,12 +46,12 @@ const PageHeaderControls = ({ pageHeaderData, onBudgetDelete }) => {
     }
 
     try {
-      const response = await axios.delete(`/api/teams/${teamId}/budget`);
-      
+      const response = await axios.delete(`/api/teams/${teamId}/budgets`);
+
       if (response.status === 204) {
         console.log('예산 삭제 완료');
         alert('예산이 성공적으로 삭제되었습니다.');
-        
+
         // 예산 삭제 후 부모 컴포넌트에 알림
         if (typeof onBudgetDelete === 'function') {
           onBudgetDelete();
@@ -61,7 +61,7 @@ const PageHeaderControls = ({ pageHeaderData, onBudgetDelete }) => {
       }
     } catch (error) {
       console.error('예산 삭제 실패:', error);
-      
+
       // 404 에러는 이미 삭제된 경우이므로 성공으로 처리
       if (error.response && error.response.status === 404) {
         console.log('이미 삭제된 예산');
@@ -76,18 +76,18 @@ const PageHeaderControls = ({ pageHeaderData, onBudgetDelete }) => {
   };
 
   return (
-    <div className={styles.pageHeaderControls}>
-      <div>
-        <h2 className={styles.pageTitle}>{teamName || 'Team Dashboard'}</h2>
-        <p className={styles.pageSubtitle}>Manage your team's expenses and budget</p>
+      <div className={styles.pageHeaderControls}>
+        <div>
+          <h2 className={styles.pageTitle}>{teamName || 'Team Dashboard'}</h2>
+          <p className={styles.pageSubtitle}>Manage your team's expenses and budget</p>
+        </div>
+        <div className={styles.pageActions}>
+          <button className={styles.buttonPrimary} onClick={handleSetBudget}>예산 설정</button>
+          <button className={styles.buttonSecondary} onClick={handleEditBudget}>예산 수정</button>
+          <button className={styles.buttonSecondary} onClick={handleAddBudget}>예산 추가</button>
+          <button className={styles.buttonDanger} onClick={handleDeleteBudget}>예산 삭제</button>
+        </div>
       </div>
-      <div className={styles.pageActions}>
-        <button className={styles.buttonPrimary} onClick={handleSetBudget}>예산 설정</button>
-        <button className={styles.buttonSecondary} onClick={handleEditBudget}>예산 수정</button>
-        <button className={styles.buttonSecondary} onClick={handleAddBudget}>예산 추가</button>
-        <button className={styles.buttonDanger} onClick={handleDeleteBudget}>예산 삭제</button>
-      </div>
-    </div>
   );
 };
 
