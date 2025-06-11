@@ -10,18 +10,16 @@ import com.luckyseven.backend.domain.budget.dto.BudgetUpdateResponse;
 import com.luckyseven.backend.domain.budget.entity.Budget;
 import com.luckyseven.backend.domain.budget.mapper.BudgetMapper;
 import com.luckyseven.backend.domain.budget.validator.BudgetValidator;
-import com.luckyseven.backend.domain.expense.entity.Expense;
 import com.luckyseven.backend.domain.expense.repository.ExpenseRepository;
 import com.luckyseven.backend.domain.team.entity.Team;
 import com.luckyseven.backend.domain.team.repository.TeamRepository;
 import com.luckyseven.backend.sharedkernel.exception.CustomLogicException;
 import com.luckyseven.backend.sharedkernel.exception.ExceptionCode;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,14 +37,7 @@ public class BudgetService {
     Team team = teamRepository.findById(teamId)
             .orElseThrow(() -> new EntityNotFoundException("팀을 찾을 수 없습니다: " + teamId));
 
-    Budget budget = Budget.builder()
-            .team(team)
-            .totalAmount(request.totalAmount())
-            .avgExchangeRate(request.exchangeRate())
-            .setBy(loginMemberId)
-            .balance(request.totalAmount())
-            .foreignCurrency(request.foreignCurrency())
-            .build();
+    Budget budget = budgetMapper.toEntity(team, loginMemberId, request);
 
     budget.setExchangeInfo(request.isExchanged(),
             budget.getTotalAmount(),
@@ -58,7 +49,7 @@ public class BudgetService {
     return budgetMapper.toCreateResponse(budget);
   }
 
-  @Transactional
+  @Transactional(readOnly = true)
   public BudgetReadResponse getByTeamId(Long teamId) {
     Budget budget = budgetValidator.validateBudgetExist(teamId);
 
