@@ -13,6 +13,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
+  // 지출이 있는 경우 예산 삭제를 제한하기 위한 지출 조회
+  Boolean existsByTeamId(Long teamId);
+
   @EntityGraph(attributePaths = {"payer"})
   Page<Expense> findByTeamId(Long teamId, Pageable pageable);
 
