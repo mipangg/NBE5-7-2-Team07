@@ -45,17 +45,13 @@ public class BudgetValidator {
   public void validateRequest(BudgetAddRequest request) {
     validateIsExchangedRequest(request.isExchanged(), request.exchangeRate());
     // additionalAmount 입력 시 isExchanged 필수
-    if (request.additionalBudget() != null && request.isExchanged() == null) {
-      throw new CustomLogicException(ExceptionCode.BAD_REQUEST,
-              "예산 추가 시 환전 여부를 함께 입력해야 합니다.");
-    }
   }
 
   private void validateIsExchangedRequest(boolean isExchanged, BigDecimal exchangeRate) {
-    if (Boolean.TRUE.equals(isExchanged) && exchangeRate == null) {
+    if (isExchanged && exchangeRate == null) {
       throw new CustomLogicException(ExceptionCode.BAD_REQUEST, "환전 여부가 true인데 환율이 없습니다.");
     }
-    if (Boolean.FALSE.equals(isExchanged) && exchangeRate != null) {
+    if (!isExchanged && exchangeRate != null) {
       throw new CustomLogicException(ExceptionCode.BAD_REQUEST, "환전 여부가 false인데 환율이 있습니다.");
     }
   }
